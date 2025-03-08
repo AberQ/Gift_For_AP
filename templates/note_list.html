@@ -9,15 +9,13 @@
         <div class="row">
             {% for note in notes %}
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %}">
+                    <a href="{% url 'note_detail' note.id %}" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
                         <div class="card-body">
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
                             </h5>
                             <p class="card-text">
-                                <a href="{% url 'note_detail' note.id %}" class="text-decoration-none">
-                                    {{ note.text|truncatechars:50 }}
-                                </a>
+                                {{ note.text|truncatechars:50 }}
                             </p>
                             <p class="text-muted">
                                 <span id="status-{{ note.id }}">
@@ -29,7 +27,7 @@
                                 {% if note.is_read %} Сделать непрочитанной {% else %} Сделать прочитанной {% endif %}
                             </button>
                         </div>
-                    </div>
+                    </a>
                 </div>
             {% endfor %}
         </div>
@@ -39,7 +37,8 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".toggle-read").forEach(button => {
-                button.addEventListener("click", function () {
+                button.addEventListener("click", function (event) {
+                    event.preventDefault();  // Предотвращаем переход по ссылке при клике на кнопку
                     let noteId = this.getAttribute("data-id");
                     let button = this;
                     let statusSpan = document.getElementById(`status-${noteId}`);
