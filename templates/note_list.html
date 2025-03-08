@@ -20,8 +20,7 @@
                 <div class="col-md-6 col-lg-4 mb-4 note-card"
                      data-read="{% if note.is_read %}read{% else %}unread{% endif %}"
                      data-secret="{% if note.is_secret %}secret{% else %}regular{% endif %}">
-                    <a href="{% url 'note_detail' note.id %}" 
-                       class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
+                    <a href="#" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
                         <div class="card-body">
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
@@ -55,13 +54,19 @@
             // Анимация заголовка
             gsap.from(".title", { opacity: 0, y: -50, duration: 1.5, ease: "power3.out" });
 
-            // Анимация карточек
+            // Разлет карточек
             let cards = document.querySelectorAll(".note-card");
-            gsap.set(cards, { opacity: 0, scale: 0.8, y: 50 });
+            gsap.set(cards, {
+                opacity: 0,
+                scale: 0.5,
+                x: () => gsap.utils.random(-200, 200),
+                y: () => gsap.utils.random(-200, 200)
+            });
 
             gsap.to(cards, {
                 opacity: 1,
                 scale: 1,
+                x: 0,
                 y: 0,
                 duration: 1.5,
                 ease: "power3.out",
@@ -137,21 +142,4 @@
             }
         });
     </script>
-
-    <style>
-        /* Анимация наведения */
-        .card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Кнопки фильтра */
-        .filter-btn {
-            margin: 5px;
-        }
-    </style>
 {% endblock %}
