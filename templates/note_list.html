@@ -20,7 +20,7 @@
                 <div class="col-md-6 col-lg-4 mb-4 note-card"
                      data-read="{% if note.is_read %}read{% else %}unread{% endif %}"
                      data-secret="{% if note.is_secret %}secret{% else %}regular{% endif %}">
-                    <a href="#" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
+                    <a href="{% url 'note_detail' note.id %}" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
                         <div class="card-body">
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
