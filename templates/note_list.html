@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список заметок</title>
+</head>
+<body>
+    <h1>Заметки</h1>
+    <ul>
+        {% for note in notes %}
+            <li>
+                {{ note.text }} 
+                {% if note.is_secret %} 🔒 {% endif %}
+                {% if note.is_read %} ✅ {% else %} ❌ {% endif %}
+            </li>
+        {% empty %}
+            <p>Нет заметок.</p>
+        {% endfor %}
+    </ul>
+</body>
+</html>
