@@ -20,4 +20,6 @@ from api.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', note_list, name="note_list"),
+    path("mark-read/<int:note_id>/", mark_note_read, name="mark_note_read"),
+    path("toggle-read/<int:note_id>/", toggle_note_read, name="toggle_note_read"),
 ]
