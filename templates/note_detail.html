@@ -15,7 +15,16 @@
                         {% if note.is_read %} ✅ Прочитана {% else %} ❌ Не прочитана {% endif %}
                     </span>
                 </p>
-                <button class="btn {% if note.is_read %}btn-warning{% else %}btn-success{% endif %} toggle-read" 
+
+                <!-- Отображение фото, если оно есть -->
+                {% if note.photo %}
+                    <div class="mt-3">
+                        <img src="{{ note.photo.url }}" alt="Фото заметки" class="img-fluid">
+                    </div>
+                {% endif %}
+
+                <!-- Кнопка "Сделать прочитанной" теперь под фото -->
+                <button class="btn {% if note.is_read %}btn-warning{% else %}btn-success{% endif %} toggle-read mt-3" 
                         data-id="{{ note.id }}">
                     {% if note.is_read %} Сделать непрочитанной {% else %} Сделать прочитанной {% endif %}
                 </button>

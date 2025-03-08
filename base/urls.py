@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from api.views import *
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", home, name="home"),
@@ -24,4 +26,4 @@ urlpatterns = [
     path("mark-read/<int:note_id>/", mark_note_read, name="mark_note_read"),
     path("toggle-read/<int:note_id>/", toggle_note_read, name="toggle_note_read"),
     path("notes/<int:note_id>/", note_detail, name="note_detail"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
