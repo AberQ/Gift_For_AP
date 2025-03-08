@@ -2,6 +2,9 @@ from django.shortcuts import render
 from .models import Note
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+def home(request):
+    return render(request, "home.html")
+
 
 def note_list(request):
     notes = Note.objects.all()
