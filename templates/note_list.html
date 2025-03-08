@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Список заметок{% endblock %}
+{% block title %}◝(ᵔᗜᵔ)◜Наши сокровища◝(ᵔᗜᵔ)◜{% endblock %}
 
 {% block content %}
-    <h1 class="text-center mb-4 title">📌 Мои заметки</h1>
+    <h1 class="text-center mb-4 title">Наше с тобой богатство...</h1>
 
     <!-- Фильтры -->
     <div class="text-center mb-4">
@@ -23,7 +23,7 @@
                     <a href="{% url 'note_detail' note.id %}" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
                         <div class="card-body">
                             <h5 class="card-title">
-                                {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
+                                {% if note.is_secret %} 🔒 Секретная история {% else %} 📝 Обычная история {% endif %}
                             </h5>
                             <p class="card-text {% if note.is_secret %}secret-note{% endif %}">
                                 {{ note.text|truncatechars:50 }}
@@ -150,4 +150,5 @@
             opacity: 0;
         }
     </style>
+    <h1 class="text-center mb-4 title">...это то, через что мы с тобой прошли(˶˃ ᵕ ˂˶)</h1>
 {% endblock %}

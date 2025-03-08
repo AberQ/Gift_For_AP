@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Детали заметки{% endblock %}
+{% block title %}(˶ᵔ ᵕ ᵔ˶)Детали крупицы воспоминания(˶ᵔ ᵕ ᵔ˶){% endblock %}
 
 {% block content %}
     <div class="container mt-4">
         <div class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %}">
             <div class="card-body">
                 <h5 class="card-title">
-                    {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
+                    {% if note.is_secret %} 🔒 Секретная история {% else %} 📝 Обычная история {% endif %}
                 </h5>
                 <p class="card-text">{{ note.text }}</p>
                 <p class="text-muted">
