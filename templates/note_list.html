@@ -25,7 +25,7 @@
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
                             </h5>
-                            <p class="card-text">
+                            <p class="card-text {% if note.is_secret %}secret-note{% endif %}">
                                 {{ note.text|truncatechars:50 }}
                             </p>
                             <p class="text-muted">
@@ -142,4 +142,12 @@
             }
         });
     </script>
+
+    <!-- Стили для секретных заметок -->
+    <style>
+        .secret-note {
+            filter: blur(3px);
+            opacity: 0;
+        }
+    </style>
 {% endblock %}
