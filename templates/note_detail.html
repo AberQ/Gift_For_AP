@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Детали заметки{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %}">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
+                </h5>
+                <p class="card-text">{{ note.text }}</p>
+                <p class="text-muted">
+                    <span id="status-{{ note.id }}">
+                        {% if note.is_read %} ✅ Прочитана {% else %} ❌ Не прочитана {% endif %}
+                    </span>
+                </p>
+                <button class="btn {% if note.is_read %}btn-warning{% else %}btn-success{% endif %} toggle-read" 
+                        data-id="{{ note.id }}">
+                    {% if note.is_read %} Сделать непрочитанной {% else %} Сделать прочитанной {% endif %}
+                </button>
+
+                <!-- Контейнер для кнопки "Вернуться к списку" -->
+                <div class="d-flex justify-content-between mt-3">
+                    <a href="{% url 'note_list' %}" class="btn btn-secondary">🔙 Вернуться к списку</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let button = document.querySelector(".toggle-read");
+            let noteId = button.getAttribute("data-id");
+            let statusSpan = document.getElementById(`status-${noteId}`);
+
+            button.addEventListener("click", function () {
+                fetch(`/toggle-read/${noteId}/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusSpan.innerHTML = data.is_read ? "✅ Прочитана" : "❌ Не прочитана";
+                        button.classList.toggle("btn-success", !data.is_read);
+                        button.classList.toggle("btn-warning", data.is_read);
+                        button.innerText = data.is_read ? "Сделать непрочитанной" : "Сделать прочитанной";
+                    }
+                });
+            });
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                let cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+{% endblock %}

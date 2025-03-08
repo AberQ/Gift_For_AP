@@ -26,3 +26,8 @@ def toggle_note_read(request, note_id):
         note.save()
         return JsonResponse({"success": True, "is_read": note.is_read})
     return JsonResponse({"success": False}, status=400)
+
+
+def note_detail(request, note_id):
+    note = get_object_or_404(Note, id=note_id)
+    return render(request, "note_detail.html", {"note": note})

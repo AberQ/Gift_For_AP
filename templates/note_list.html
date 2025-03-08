@@ -14,7 +14,11 @@
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
                             </h5>
-                            <p class="card-text">{{ note.text }}</p>
+                            <p class="card-text">
+                                <a href="{% url 'note_detail' note.id %}" class="text-decoration-none">
+                                    {{ note.text|truncatechars:50 }}
+                                </a>
+                            </p>
                             <p class="text-muted">
                                 <span id="status-{{ note.id }}">
                                     {% if note.is_read %} ✅ Прочитана {% else %} ❌ Не прочитана {% endif %}
@@ -61,7 +65,6 @@
             });
         });
 
-        // Функция для получения CSRF-токена из куков
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== "") {
