@@ -5,11 +5,23 @@
 {% block content %}
     <h1 class="text-center mb-4 title">📌 Мои заметки</h1>
 
+    <!-- Фильтры -->
+    <div class="text-center mb-4">
+        <button class="btn btn-primary filter-btn" data-filter="all">Все</button>
+        <button class="btn btn-success filter-btn" data-filter="read">Прочитанные</button>
+        <button class="btn btn-warning filter-btn" data-filter="unread">Непрочитанные</button>
+        <button class="btn btn-danger filter-btn" data-filter="secret">Секретные</button>
+        <button class="btn btn-info filter-btn" data-filter="regular">Обычные</button>
+    </div>
+
     {% if notes %}
         <div class="row">
             {% for note in notes %}
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <a href="{% url 'note_detail' note.id %}" class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
+                <div class="col-md-6 col-lg-4 mb-4 note-card"
+                     data-read="{% if note.is_read %}read{% else %}unread{% endif %}"
+                     data-secret="{% if note.is_secret %}secret{% else %}regular{% endif %}">
+                    <a href="{% url 'note_detail' note.id %}" 
+                       class="card shadow {% if note.is_secret %}border-danger{% else %}border-primary{% endif %} text-decoration-none">
                         <div class="card-body">
                             <h5 class="card-title">
                                 {% if note.is_secret %} 🔒 Секретная {% else %} 📝 Обычная {% endif %}
@@ -43,28 +55,48 @@
             // Анимация заголовка
             gsap.from(".title", { opacity: 0, y: -50, duration: 1.5, ease: "power3.out" });
 
-            // Анимация карточек (разлет + сборка)
-            let cards = document.querySelectorAll(".card");
-            gsap.set(cards, { opacity: 0, scale: 0.8, x: () => Math.random() * 400 - 200, y: () => Math.random() * 400 - 200, rotation: () => Math.random() * 60 - 30 });
+            // Анимация карточек
+            let cards = document.querySelectorAll(".note-card");
+            gsap.set(cards, { opacity: 0, scale: 0.8, y: 50 });
 
             gsap.to(cards, {
                 opacity: 1,
                 scale: 1,
-                x: 0,
                 y: 0,
-                rotation: 0,
                 duration: 1.5,
                 ease: "power3.out",
-                stagger: 0.1  // Добавляет плавный эффект появления по очереди
+                stagger: 0.1
+            });
+
+            // Фильтрация карточек
+            document.querySelectorAll(".filter-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    let filter = this.getAttribute("data-filter");
+                    document.querySelectorAll(".note-card").forEach(card => {
+                        let isRead = card.getAttribute("data-read");
+                        let isSecret = card.getAttribute("data-secret");
+
+                        if (filter === "all" ||
+                            (filter === "read" && isRead === "read") ||
+                            (filter === "unread" && isRead === "unread") ||
+                            (filter === "secret" && isSecret === "secret") ||
+                            (filter === "regular" && isSecret === "regular")) {
+                            gsap.to(card, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" });
+                        } else {
+                            gsap.to(card, { opacity: 0, scale: 0.8, duration: 0.5, ease: "power2.in" });
+                        }
+                    });
+                });
             });
 
             // Обработчик кнопки "Прочитано/Не прочитано"
             document.querySelectorAll(".toggle-read").forEach(button => {
                 button.addEventListener("click", function (event) {
-                    event.preventDefault();  
+                    event.preventDefault();
                     let noteId = this.getAttribute("data-id");
                     let button = this;
                     let statusSpan = document.getElementById(`status-${noteId}`);
+                    let card = button.closest(".note-card");
 
                     fetch(`/toggle-read/${noteId}/`, {
                         method: "POST",
@@ -81,6 +113,9 @@
                             button.classList.toggle("btn-success", !data.is_read);
                             button.classList.toggle("btn-warning", data.is_read);
                             button.innerText = data.is_read ? "Сделать непрочитанной" : "Сделать прочитанной";
+
+                            // Обновляем атрибут фильтрации
+                            card.setAttribute("data-read", data.is_read ? "read" : "unread");
                         }
                     });
                 });
@@ -104,14 +139,19 @@
     </script>
 
     <style>
-        /* Эффект при наведении */
+        /* Анимация наведения */
         .card {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .card:hover {
-            transform: scale(1.05);  /* Увеличиваем размер карточки */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Добавляем тень */
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Кнопки фильтра */
+        .filter-btn {
+            margin: 5px;
         }
     </style>
 {% endblock %}
