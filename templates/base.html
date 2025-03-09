@@ -26,35 +26,46 @@
 
         .navbar {
             background-color: #f19c42; /* Теплый оранжевый */
+            display: flex;
+            justify-content: space-between; /* Разделяем элементы */
+            align-items: center;
+            padding: 10px;
         }
+
         .navbar a {
             color: white !important; /* Белые ссылки */
             font-weight: bold;
             font-size: 1.2rem; /* Уравняем размер шрифта */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Тень для текста */
         }
+
         .navbar a:hover {
             color: #f8f4e3 !important; /* Мелкий контраст для ссылок при наведении */
         }
+
         .container {
             background-color: #fff9e6; /* Светлый, теплый фон для контента */
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Легкая тень для уюта */
         }
+
         h1, h2, h3 {
             color: #f19c42; /* Тот же теплый цвет для заголовков */
             font-size: 1.5rem; /* Уравняем размер шрифта */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Тень для заголовков */
         }
+
         .btn {
             background-color: #f19c42;
             color: white;
             border-radius: 12px;
         }
+
         .btn:hover {
             background-color: #e4892f;
         }
+
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -63,6 +74,18 @@
             color: white;
             border-radius: 10px;
         }
+
+        .volume-control {
+            width: 100px;
+        }
+
+        /* Аудио-контролы */
+        .audio-controls {
+            display: flex;
+            justify-content: center; /* Центрируем по горизонтали */
+            align-items: center; /* Центрируем по вертикали */
+            gap: 10px;
+        }
     </style>
 
     {% load static %}
@@ -70,7 +93,18 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
+            <!-- Левая часть навигации -->
             <a class="navbar-brand" href="{% url 'home' %}"> <span style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">✨💫⭐️Открыточка⭐️💫✨</span></a>
+
+            <!-- Центр: контролы для аудио -->
+            <div class="audio-controls">
+                <button id="prevTrackBtn" class="btn btn-light">⏮️</button>
+                <button id="playPauseBtn" class="btn btn-light">❚❚</button>
+                <button id="nextTrackBtn" class="btn btn-light">⏭️</button>
+                <input type="range" id="volumeControl" class="volume-control" value="100" max="100" />
+            </div>
+
+            <!-- Правая часть навигации -->
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -99,21 +133,105 @@
     </audio>
 
     <script>
-        // Пытаемся проверить, продолжается ли воспроизведение при переходе на новую страницу
+        // Список треков
+        const tracks = [
+            "{% static 'audio/Toby_Fox-Memory.mp3' %}",
+            "{% static 'audio/Toby_Fox-His_Theme.mp3' %}",
+            "{% static 'audio/Toby_Fox-Undertale.mp3' %}",
+            "{% static 'audio/Toby_Fox-Dummy.mp3' %}",
+            "{% static 'audio/Toby_Fox-Snowdin_Town.mp3' %}",
+            "{% static 'audio/Toby_Fox_-_Dogsong_64962762.mp3' %}",
+            "{% static 'audio/Toby_Fox_-_Spider_Dance_64962807.mp3' %}",
+            "{% static 'audio/Toby_Fox_-_Death_By_Glamour_64962823.mp3' %}",
+            "{% static 'audio/Toby_Fox_-_Bonetrousle_64962766.mp3' %}",
+            "{% static 'audio/Toby_Fox_-_MEGALOVANIA_64962866.mp3' %}",
+            "{% static 'audio/Oomph_-_Der_storm_28576181.mp3' %}",
+        ];
+    
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('background-audio');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volumeControl = document.getElementById('volumeControl');
+        const prevTrackBtn = document.getElementById('prevTrackBtn');
+        const nextTrackBtn = document.getElementById('nextTrackBtn');
+    
+        // Функция для обновления трека
+        function updateTrack() {
+            audio.src = tracks[currentTrackIndex];
+            audio.play();
+            playPauseBtn.textContent = '❚❚'; // Пауза
+        }
+    
+        // Восстанавливаем состояние воспроизведения, громкости и времени из localStorage
         window.addEventListener('load', function() {
-            const audio = document.getElementById('background-audio');
-
-            // Проверяем, есть ли информация о текущем времени в sessionStorage
-            if (sessionStorage.getItem('audioTime')) {
-                audio.currentTime = sessionStorage.getItem('audioTime');
+            const savedVolume = localStorage.getItem('audioVolume');
+            const savedState = localStorage.getItem('audioState');
+            const savedTrackIndex = localStorage.getItem('audioTrackIndex');
+            const savedTime = localStorage.getItem('audioTime');
+    
+            if (savedTrackIndex !== null) {
+                currentTrackIndex = parseInt(savedTrackIndex); // Восстанавливаем текущий трек
+                audio.src = tracks[currentTrackIndex];
             }
-
-            // Сохраняем время аудио при изменении
+    
+            if (savedVolume !== null) {
+                audio.volume = savedVolume;
+                volumeControl.value = savedVolume * 100; // Обновляем ползунок громкости
+            }
+    
+            if (savedState === 'playing') {
+                audio.play();
+                playPauseBtn.textContent = '❚❚'; // Пауза
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = '▶️'; // Воспроизведение
+            }
+    
+            // Восстановление времени воспроизведения
+            if (savedTime !== null) {
+                audio.currentTime = savedTime;
+            }
+    
+            // Сохранение времени
             audio.addEventListener('timeupdate', function() {
-                sessionStorage.setItem('audioTime', audio.currentTime);
+                localStorage.setItem('audioTime', audio.currentTime);
             });
         });
+    
+        // Функция для воспроизведения/паузы
+        playPauseBtn.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.textContent = '❚❚'; // Пауза
+                localStorage.setItem('audioState', 'playing');
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = '▶️'; // Воспроизведение
+                localStorage.setItem('audioState', 'paused');
+            }
+        });
+    
+        // Изменение громкости
+        volumeControl.addEventListener('input', function() {
+            audio.volume = volumeControl.value / 100;
+            localStorage.setItem('audioVolume', audio.volume); // Сохраняем громкость
+        });
+    
+        // Переключение на предыдущий трек
+        prevTrackBtn.addEventListener('click', function() {
+            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+            updateTrack();
+            localStorage.setItem('audioTrackIndex', currentTrackIndex); // Сохраняем индекс текущего трека
+        });
+    
+        // Переключение на следующий трек
+        nextTrackBtn.addEventListener('click', function() {
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            updateTrack();
+            localStorage.setItem('audioTrackIndex', currentTrackIndex); // Сохраняем индекс текущего трека
+        });
     </script>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
