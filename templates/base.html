@@ -64,6 +64,8 @@
             border-radius: 10px;
         }
     </style>
+
+    {% load static %}
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -89,6 +91,29 @@
         <p>Благодаря тебе я тот, кто я есть сейчас...</p>
         <p>Спасибо, что ты есть, будь счастлива хотя бы ради меня, прошу(╥﹏╥)</p>
     </div>
+
+    <!-- Добавление элемента audio -->
+    <audio id="background-audio" loop autoplay>
+        <source src="{% static 'audio/Toby_Fox-Memory.mp3' %}" type="audio/mp3">
+        Ваш браузер не поддерживает элемент audio.
+    </audio>
+
+    <script>
+        // Пытаемся проверить, продолжается ли воспроизведение при переходе на новую страницу
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('background-audio');
+
+            // Проверяем, есть ли информация о текущем времени в sessionStorage
+            if (sessionStorage.getItem('audioTime')) {
+                audio.currentTime = sessionStorage.getItem('audioTime');
+            }
+
+            // Сохраняем время аудио при изменении
+            audio.addEventListener('timeupdate', function() {
+                sessionStorage.setItem('audioTime', audio.currentTime);
+            });
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
